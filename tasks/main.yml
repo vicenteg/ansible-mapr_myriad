@@ -1,0 +1,12 @@
+---
+# tasks file for vicenteg.mapr_myriad
+
+- name: install mapr-myriad
+  sudo_user: root
+  yum: name={{item}} state=present
+  environment: proxy_env
+  with_items:
+    - mapr-myriad
+    - mapr-myriad-executor
+    - mapr-myriad-scheduler
+
