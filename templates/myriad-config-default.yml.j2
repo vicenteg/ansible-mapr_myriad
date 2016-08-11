@@ -1,0 +1,82 @@
+##
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+##
+mesosMaster: zk://{% for node in groups['zookeeper'] -%}{{ hostvars[node].ansible_default_ipv4.address }}:5181{% if not loop.last %},{% endif %}{% endfor %}/mesos
+checkpoint: false
+frameworkFailoverTimeout: 43200000
+frameworkName: framework1
+frameworkRole: 
+frameworkUser: mapr
+                          # running the resource manager.
+frameworkSuperUser: root  # To be depricated, currently permissions need set by a superuser due to Mesos-1790.  Must be
+                          # root or have passwordless sudo. Required if nodeManagerURI set, ignored otherwise.
+nativeLibrary: /usr/local/lib/libmesos.so
+zkServers: {% for node in groups['zookeeper'] -%}{{ hostvars[node].ansible_default_ipv4.address }}:5181{% if not loop.last %},{% endif %}{% endfor %}
+zkTimeout: 20000
+restApiPort: 8192
+profiles:
+  zero:  # NMs launched with this profile dynamically obtain cpu/mem from Mesos
+    cpu: 0
+    mem: 0
+    spindles: 0
+  small:
+    cpu: 2
+    mem: 2048
+    spindles: 1
+  medium:
+    cpu: 4
+    mem: 4096
+    spindles: 1
+  large:
+    cpu: 10
+    mem: 12288
+    spindles: 1
+nmInstances: # NMs to start with. Requires at least 1 NM with a non-zero profile.
+  medium: 1 # <profile_name : instances>
+rebalancer: false
+haEnabled: true
+nodemanager:
+  jvmMaxMemoryMB: 1024
+  cpus: 0.2
+  cgroups: false
+executor:
+  jvmMaxMemoryMB: 256
+  path: file:///opt/mapr/myriad/myriad-0.1/lib/myriad-executor-runnable-0.1.0.jar
+  #The following should be used for a remotely distributed URI, hdfs assumed but other URI types valid.
+  #nodeManagerUri: hdfs://namenode:port/dist/hadoop-2.7.0.tar.gz
+  #path: file:///opt/mapr/myriad/myriad-0.1/lib/myriad-executor-runnable-0.1.0.jar
+yarnEnvironment:
+  YARN_NODEMANAGER_OPTS: # -Dcluster.name.prefix=/framework1
+  YARN_HOME: /opt/mapr/hadoop/hadoop-2.7.0
+  #YARN_HOME: /opt/mapr/hadoop/hadoop-2.7.0
+  #JAVA_HOME: /usr/lib/jvm/java-default #System dependent, but sometimes necessary
+mesosAuthenticationPrincipal:
+mesosAuthenticationSecretFilename:
+services:
+   jobhistory:
+     jvmMaxMemoryMB: 64
+     cpus: 0.5
+     ports:
+       myriad.mapreduce.jobhistory.admin.address: 10033
+       myriad.mapreduce.jobhistory.address: 10020
+       myriad.mapreduce.jobhistory.webapp.address: 19888
+     envSettings: # -Dcluster.name.prefix=/framework1
+     taskName: jobhistory
+     serviceOptsName: HADOOP_JOB_HISTORYSERVER_OPTS
+     command: $YARN_HOME/bin/mapred historyserver
+     maxInstances: 1

@@ -5,9 +5,13 @@
   become: yes
   become_user: root
   yum: name={{item}} state=present
-  environment: proxy_env
+  environment: '{{proxy_env}}'
   with_items:
     - mapr-myriad
     - mapr-myriad-executor
     - mapr-myriad-scheduler
 
+- name: install myriad config
+  become: yes
+  become_user: root
+  template: src=myriad-config-default.yml.j2 dest=/opt/mapr/myriad/myriad-{{myriad_version}}/conf/myriad-config-default.yml mode=0644
