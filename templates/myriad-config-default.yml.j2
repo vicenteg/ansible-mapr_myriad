@@ -41,13 +41,14 @@ profiles:
   medium:
     cpu: 4
     mem: 4096
-    spindles: 1
+    spindles: 2
   large:
     cpu: 10
     mem: 12288
-    spindles: 1
+    spindles: 4
 nmInstances: # NMs to start with. Requires at least 1 NM with a non-zero profile.
   medium: 1 # <profile_name : instances>
+  zero: {{groups.cluster|length}} # <profile_name : instances>
 rebalancer: false
 haEnabled: true
 nodemanager:
@@ -61,7 +62,7 @@ executor:
   #nodeManagerUri: hdfs://namenode:port/dist/hadoop-2.7.0.tar.gz
   #path: file:///opt/mapr/myriad/myriad-0.1/lib/myriad-executor-runnable-0.1.0.jar
 yarnEnvironment:
-  YARN_NODEMANAGER_OPTS: # -Dcluster.name.prefix=/framework1
+  YARN_NODEMANAGER_OPTS: {% if secure_cluster %}#{% endif %}-Dcluster.name.prefix=/framework1
   YARN_HOME: /opt/mapr/hadoop/hadoop-2.7.0
   #YARN_HOME: /opt/mapr/hadoop/hadoop-2.7.0
   #JAVA_HOME: /usr/lib/jvm/java-default #System dependent, but sometimes necessary
@@ -75,7 +76,7 @@ services:
        myriad.mapreduce.jobhistory.admin.address: 10033
        myriad.mapreduce.jobhistory.address: 10020
        myriad.mapreduce.jobhistory.webapp.address: 19888
-     envSettings: # -Dcluster.name.prefix=/framework1
+     envSettings: {% if secure_cluster %}#{% endif %}-Dcluster.name.prefix=/framework1
      taskName: jobhistory
      serviceOptsName: HADOOP_JOB_HISTORYSERVER_OPTS
      command: $YARN_HOME/bin/mapred historyserver
