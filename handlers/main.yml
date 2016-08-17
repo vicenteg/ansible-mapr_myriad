@@ -1,2 +1,5 @@
 ---
 # handlers file for vicenteg.mapr_myriad
+
+- name: restart myriad
+  shell: /bin/true

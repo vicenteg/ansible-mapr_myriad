@@ -15,3 +15,4 @@
   become: yes
   become_user: root
   template: src=myriad-config-default.yml.j2 dest=/opt/mapr/myriad/myriad-{{myriad_version}}/conf/myriad-config-default.yml mode=0644
+  notify: restart myriad
