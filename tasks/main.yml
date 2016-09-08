@@ -5,7 +5,6 @@
   become: yes
   become_user: root
   yum: name={{item}} state=present
-  environment: '{{proxy_env}}'
   with_items:
     - mapr-myriad
     - mapr-myriad-executor
