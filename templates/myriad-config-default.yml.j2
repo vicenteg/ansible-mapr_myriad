@@ -37,15 +37,15 @@ profiles:
   small:
     cpu: 1
     mem: 2048
-    spindles: 1
+    spindles: 0
   medium:
     cpu: 2
     mem: 4096
-    spindles: 2
+    spindles: 0
   large:
     cpu: 6
     mem: 12288
-    spindles: 4
+    spindles: 0
 nmInstances: # NMs to start with. Requires at least 1 NM with a non-zero profile.
   medium: 1 # one non-zero NM required to do anything useful
   zero: {{groups.cluster|length - 1}} # <profile_name : instances>
