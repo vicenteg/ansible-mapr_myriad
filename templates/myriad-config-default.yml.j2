@@ -48,7 +48,7 @@ profiles:
     spindles: 0
 nmInstances: # NMs to start with. Requires at least 1 NM with a non-zero profile.
   medium: 1 # one non-zero NM required to do anything useful
-  zero: {{groups.cluster|length - 1}} # <profile_name : instances>
+  zero: {{groups['mesos-agent']|length - 1}} # <profile_name : instances>
 rebalancer: false
 haEnabled: true
 nodemanager:
